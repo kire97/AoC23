@@ -1,26 +1,35 @@
-def reduce_str(input: str):
-    result = input
-    string_to_int = {'zero': 0, 'one': 1, 'two': 2, 'three': 3, 'four': 4, 'five': 5, 'six': 6, 'seven': 7, 'eight': 8, 'nine': 9, }
-
+def reduce_str(in_data: str) -> str:
+    result = in_data
+    string_to_int = {
+        'one': 1,
+        'two': 2,
+        'three': 3,
+        'four': 4,
+        'five': 5,
+        'six': 6,
+        'seven': 7,
+        'eight': 8,
+        'nine': 9,
+    }
     for k, v in string_to_int.items():
-        slices = result.split(k)
-        for slice in slices[:-1]:
-            result += f'{slice}{v}'
-        result += f'{slices[-1]}'
+        # Have to append the number inbetween two
+        # string versions in case another number overlaps
+        result = result.replace(k, k + str(v) + k)
     return result
 
-def solve(input: list[str]):
+
+def solve(in_data: list[str]):
     result: int = 0
 
-    for line in input:
+    for line in in_data:
+        # part2
+        numbered_line = reduce_str(line)
 
-        numbers = [c for c in reduce_str(line) if c.isnumeric()]
-
+        numbers = [c for c in numbered_line if c.isnumeric()]
         result += int(f'{numbers[0]}{numbers[-1]}')
 
-
-
     return result
-    
+
+
 with open('day1.input', mode='r') as file:
     print(solve(file.readlines()))
