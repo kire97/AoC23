@@ -1,4 +1,7 @@
-def get_hand_value(line: str):
+from functools import partial
+
+
+def get_hand_value(line: str, part2: bool = False):
     hand: str = line.split()[0]
     hand_value = 0
 
@@ -17,14 +20,33 @@ def get_hand_value(line: str):
         "K": 11,
         "A": 12,
     }
+
+    if part2:
+        card_to_value['J'] = 0
+        card_to_value['T'] += 1
+        for card in card_to_value.keys():
+            if card.isnumeric():
+                card_to_value[card] += 1
+
     for i, card in enumerate(reversed(hand)):
         hand_value += (13**i) * card_to_value[card]
+
+    if part2:
+        jokers = hand.count('J')
+        hand = hand.replace('J', '')
 
     copies_list: list[int] = []
     while hand:
         card = hand[0]
         copies_list.append(hand.count(card))
         hand = hand.replace(card, "")
+
+    if part2:
+        if copies_list:
+            copies_list.sort()
+            copies_list[-1] += jokers
+        else:
+            copies_list.append(jokers)
 
     hand_type: int
     match len(copies_list):
@@ -61,7 +83,14 @@ def solve(in_data: list[str]):
         bid = int(line.split()[1])
         result += bid * (idx + 1)
 
-    return result
+    result2: int = 0
+    for idx, line in enumerate(
+        sorted(in_data, key=partial(get_hand_value, part2=True))
+    ):
+        bid = int(line.split()[1])
+        result2 += bid * (idx + 1)
+
+    return result, result2
 
 
 with open("day7.input", "r") as file:
